@@ -1,3 +1,12 @@
+on replace_chars(this_text, search_string, replacement_string)
+	set AppleScript's text item delimiters to the search_string
+	set the item_list to every text item of this_text
+	set AppleScript's text item delimiters to the replacement_string
+	set this_text to the item_list as string
+	set AppleScript's text item delimiters to ""
+	return this_text
+end replace_chars
+
 on is_running(appName)
 	tell application "System Events" to (name of processes) contains appName
 end is_running
@@ -20,6 +29,27 @@ if safRunning then
 
 	
 		set artFileName to (artist of current track) & \" - \" & (album of current track) & \" (\" & year of current track & \").png\"
+
+		set theText to artFileName
+		set oldString to \":\"
+		set newString to \";\"
+
+		local ASTID, lst
+		set ASTID to AppleScript's text item delimiters
+		try
+			considering case
+				set AppleScript's text item delimiters to oldString
+				set lst to every text item of theText
+				set AppleScript's text item delimiters to newString
+				set theText to lst as string
+			end considering
+			set AppleScript's text item delimiters to ASTID
+			set artFileName to theText
+		on error eMsg number eNum
+			set AppleScript's text item delimiters to ASTID
+			error \"Can't replaceString: \" & eMsg number eNum
+		end try
+
 		set fullArchivePath to ((path to home folder) as text) & \"Dropbox:albumArt:\" & artFileName
 		
 		if rating of current track = 100 then
