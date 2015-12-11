@@ -17,40 +17,41 @@ if safRunning then
 	run script "tell application \"iTunes\" 
 	if player state is playing then
 	
-		tell artwork 1 of current track
-			set artData to raw data
-		end tell
+		try
+			tell artwork 1 of current track
+				set artData to raw data
+			end tell
 
-		(((path to home folder) as text) & \"Dropbox:Ubersicht:widgets:artwork.widget:currentPlayingCover.png\")
-		set deskFile to open for access file result with write permission
-		set eof deskFile to 0
-		write artData to deskFile
-		close access deskFile
+			(((path to home folder) as text) & \"Dropbox:Ubersicht:widgets:artwork.widget:currentPlayingCover.png\")
+			set deskFile to open for access file result with write permission
+			set eof deskFile to 0
+			write artData to deskFile
+			close access deskFile
 
 	
-		set artFileName to (artist of current track) & \" - \" & (album of current track) & \" (\" & year of current track & \").png\"
+			set artFileName to (artist of current track) & \" - \" & (album of current track) & \" (\" & year of current track & \").png\"
 
-		set theText to artFileName
-		set oldString to \":\"
-		set newString to \";\"
+			set theText to artFileName
+			set oldString to \":\"
+			set newString to \";\"
 
-		local ASTID, lst
-		set ASTID to AppleScript's text item delimiters
-		try
-			considering case
-				set AppleScript's text item delimiters to oldString
-				set lst to every text item of theText
-				set AppleScript's text item delimiters to newString
-				set theText to lst as string
-			end considering
-			set AppleScript's text item delimiters to ASTID
-			set artFileName to theText
-		on error eMsg number eNum
-			set AppleScript's text item delimiters to ASTID
-			error \"Can't replaceString: \" & eMsg number eNum
-		end try
+			local ASTID, lst
+			set ASTID to AppleScript's text item delimiters
+			try
+				considering case
+					set AppleScript's text item delimiters to oldString
+					set lst to every text item of theText
+					set AppleScript's text item delimiters to newString
+					set theText to lst as string
+				end considering
+				set AppleScript's text item delimiters to ASTID
+				set artFileName to theText
+			on error eMsg number eNum
+				set AppleScript's text item delimiters to ASTID
+				error \"Can't replaceString: \" & eMsg number eNum
+			end try
 
-		set fullArchivePath to ((path to home folder) as text) & \"Dropbox:albumArt:\" & artFileName
+			set fullArchivePath to ((path to home folder) as text) & \"Dropbox:albumArt:\" & artFileName
 		
 		if rating of current track = 100 then
 			tell application \"System Events\"
@@ -65,7 +66,9 @@ if safRunning then
 				end if
 			end tell
 		end if
-		
+
+	end try
+
 	end if
 	
 	end tell"
